@@ -611,7 +611,7 @@ export default function StrategyPlanPage() {
                         <select
                           className="form-input"
                           id="kpiSelect"
-                          readOnly
+                          disabled
                           style={{ backgroundColor: '#F9FAFB' }}
                         >
                           <option value="cpa">CPA最適化</option>
