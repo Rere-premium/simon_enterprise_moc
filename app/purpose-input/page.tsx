@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Noto_Sans_JP } from 'next/font/google';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
@@ -12,12 +13,17 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export default function PurposeInputPage() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('tab1');
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleGenerateStrategy = () => {
+    router.push('/ai-generating');
   };
 
   const selectChip = (chipText: string) => {
@@ -913,7 +919,9 @@ export default function PurposeInputPage() {
                 )}
               </div>
               <div className="action-area">
-                <button className="btn btn-primary">AI戦略を生成する</button>
+                <button className="btn btn-primary" onClick={handleGenerateStrategy}>
+                  AI戦略を生成する
+                </button>
                 <p style={{ marginTop: '16px', color: '#6B7280' }}>
                   入力内容をもとに、AIが市場構造を解析し、最適な戦略を自動生成します。
                 </p>
