@@ -135,7 +135,15 @@ export default function Header({ onMenuToggle, isMenuOpen }: HeaderProps) {
       `}</style>
       <header className="header">
         <div className="header-left">
-          <button className="menu-toggle-button" onClick={onMenuToggle} title="メニュー">
+          <button 
+            className="menu-toggle-button" 
+            onClick={() => {
+              if (onMenuToggle) {
+                onMenuToggle();
+              }
+            }} 
+            title="メニュー"
+          >
             <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
           </button>
           <div className="logo">simon</div>

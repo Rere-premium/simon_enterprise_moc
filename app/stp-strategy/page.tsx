@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Noto_Sans_JP } from 'next/font/google';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 
 const notoSansJP = Noto_Sans_JP({
   weight: ['400', '500', '700'],
@@ -12,8 +14,13 @@ const notoSansJP = Noto_Sans_JP({
 
 export default function STPStrategyPage() {
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [showAIMessage, setShowAIMessage] = useState(false);
   const [serviceDescription, setServiceDescription] = useState('');
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const handleRegenerate = () => {
     setShowAIMessage(true);
@@ -49,6 +56,23 @@ export default function STPStrategyPage() {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           text-rendering: optimizeLegibility;
+        }
+
+        .sidebar-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 40;
+        }
+
+        @media (max-width: 1023px) {
+          .sidebar-overlay.show {
+            display: block;
+          }
         }
 
         .slide-container {
@@ -346,9 +370,65 @@ export default function STPStrategyPage() {
           background-color: #F9FAFB;
         }
       `}</style>
-      <div className="slide-container">
-        <div className="slide-content">
-          <div style={{ padding: '32px' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#F9FAFB' }}>
+        <Sidebar isOpen={isMenuOpen} />
+        {isMenuOpen && (
+          <div
+            className="sidebar-overlay show"
+            onClick={toggleMenu}
+          ></div>
+        )}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Header onMenuToggle={toggleMenu} isMenuOpen={isMenuOpen} />
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '20px', overflow: 'auto' }}>
+            <div className="slide-container">
+              <div className="slide-content">
+                <div style={{ padding: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '20px', left: 0, right: 0, height: '2px', background: '#E5E7EB', zIndex: 1 }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>目的入力</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>市場セグメント</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>ターゲット選定</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#005A9C', borderColor: '#005A9C', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>4</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#111827', textAlign: 'center', fontWeight: '500', maxWidth: '80px' }}>価値提案・ポジション</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>5</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>広告戦略</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>6</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>LP改善</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>7</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>施策・実行</p>
+                </div>
+              </div>
             <h1 className="main-title">AIが市場構造を理解し、最適なターゲットと価値提案を自動設計</h1>
             <p className="subtitle">あなたのビジネスに最適な「市場・顧客・価値ポジション」を自動で分析・提案します。</p>
 
@@ -554,6 +634,9 @@ export default function STPStrategyPage() {
                 </div>
               </div>
             )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -65,6 +65,23 @@ export default function StrategyPlanPage() {
           -webkit-font-smoothing: antialiased;
         }
 
+        .sidebar-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 40;
+        }
+
+        @media (max-width: 1023px) {
+          .sidebar-overlay.show {
+            display: block;
+          }
+        }
+
         .slide-container {
           width: 1280px;
           min-height: 720px;
@@ -565,12 +582,63 @@ export default function StrategyPlanPage() {
       `}</style>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#F9FAFB' }}>
         <Sidebar isOpen={isMenuOpen} />
+        {isMenuOpen && (
+          <div
+            className="sidebar-overlay show"
+            onClick={toggleMenu}
+          ></div>
+        )}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Header onMenuToggle={toggleMenu} isMenuOpen={isMenuOpen} />
           <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '20px', overflow: 'auto' }}>
             <div className="slide-container">
               <div className="slide-content">
                 <div className="header-section">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '20px', left: 0, right: 0, height: '2px', background: '#E5E7EB', zIndex: 1 }}></div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                        <i className="fas fa-check fa-xs"></i>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>目的入力</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                        <i className="fas fa-check fa-xs"></i>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>市場セグメント</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                        <i className="fas fa-check fa-xs"></i>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>ターゲット選定</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                        <i className="fas fa-check fa-xs"></i>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>価値提案・ポジション</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                        <i className="fas fa-check fa-xs"></i>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>広告戦略</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#005A9C', borderColor: '#005A9C', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                        <p>6</p>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#111827', textAlign: 'center', fontWeight: '500', maxWidth: '80px' }}>LP改善</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                        <p>7</p>
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>施策・実行</p>
+                    </div>
+                  </div>
                   <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111827', marginBottom: '12px' }}>
                     施策プラン（AI自動生成）
                   </h1>

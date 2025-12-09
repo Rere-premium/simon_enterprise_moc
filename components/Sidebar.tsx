@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface SidebarProps {
   isOpen?: boolean;
 }
 
 export default function Sidebar({ isOpen = true }: SidebarProps) {
+  const pathname = usePathname();
   return (
     <>
       <style jsx>{`
@@ -30,8 +32,8 @@ export default function Sidebar({ isOpen = true }: SidebarProps) {
 
         @media (min-width: 1024px) {
           .sidebar.closed {
-            transform: translateX(0);
-            position: relative;
+            transform: translateX(-100%);
+            position: absolute;
           }
         }
 
@@ -164,30 +166,38 @@ export default function Sidebar({ isOpen = true }: SidebarProps) {
           </div>
           <p className="nav-label">戦略フロー</p>
           <div style={{ marginBottom: '16px' }}>
-            <Link href="/purpose-input" className="nav-item">
-              <span className="nav-icon">
-                <i className="fas fa-bullseye"></i>
-              </span>
-              <p>目的・条件入力</p>
+            <Link href="/purpose-input" style={{ textDecoration: 'none' }}>
+              <div className={`nav-item ${pathname === '/purpose-input' ? 'active' : ''}`}>
+                <span className="nav-icon">
+                  <i className="fas fa-bullseye"></i>
+                </span>
+                <p>目的・条件入力</p>
+              </div>
             </Link>
-            <div className="nav-item active">
-              <span className="nav-icon">
-                <i className="fas fa-chart-pie"></i>
-              </span>
-              <p>STP戦略自動生成</p>
-            </div>
-            <div className="nav-item">
-              <span className="nav-icon">
-                <i className="fas fa-ad"></i>
-              </span>
-              <p>広告戦略プレビュー</p>
-            </div>
-            <div className="nav-item">
-              <span className="nav-icon">
-                <i className="fas fa-clipboard-list"></i>
-              </span>
-              <p>施策プラン・広告設計</p>
-            </div>
+            <Link href="/stp-strategy" style={{ textDecoration: 'none' }}>
+              <div className={`nav-item ${pathname === '/stp-strategy' ? 'active' : ''}`}>
+                <span className="nav-icon">
+                  <i className="fas fa-chart-pie"></i>
+                </span>
+                <p>STP戦略自動生成</p>
+              </div>
+            </Link>
+            <Link href="/ad-strategy-preview" style={{ textDecoration: 'none' }}>
+              <div className={`nav-item ${pathname === '/ad-strategy-preview' ? 'active' : ''}`}>
+                <span className="nav-icon">
+                  <i className="fas fa-ad"></i>
+                </span>
+                <p>広告戦略プレビュー</p>
+              </div>
+            </Link>
+            <Link href="/strategy-plan" style={{ textDecoration: 'none' }}>
+              <div className={`nav-item ${pathname === '/strategy-plan' ? 'active' : ''}`}>
+                <span className="nav-icon">
+                  <i className="fas fa-clipboard-list"></i>
+                </span>
+                <p>施策プラン・広告設計</p>
+              </div>
+            </Link>
             <div className="nav-item">
               <span className="nav-icon">
                 <i className="fas fa-chart-line"></i>

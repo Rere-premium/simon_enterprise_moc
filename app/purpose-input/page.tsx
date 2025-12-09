@@ -17,13 +17,24 @@ export default function PurposeInputPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('tab1');
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(5);
+  const [step1Complete, setStep1Complete] = useState(false);
+  const [step2Complete, setStep2Complete] = useState(false);
+  const [step3Complete, setStep3Complete] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleGenerateStrategy = () => {
-    router.push('/ai-generating');
+    setShowModal(true);
+    setProgress(0);
+    setTimeRemaining(5);
+    setStep1Complete(false);
+    setStep2Complete(false);
+    setStep3Complete(false);
   };
 
   const selectChip = (chipText: string) => {
@@ -56,6 +67,50 @@ export default function PurposeInputPage() {
     });
   }, [activeTab]);
 
+  useEffect(() => {
+    if (!showModal) return;
+
+    // ステップ1完了（0.9秒後）
+    const timer1 = setTimeout(() => {
+      setStep1Complete(true);
+      setProgress(33);
+    }, 900);
+
+    // ステップ2完了（1.8秒後）
+    const timer2 = setTimeout(() => {
+      setStep2Complete(true);
+      setProgress(66);
+    }, 1800);
+
+    // ステップ3完了（2.7秒後）
+    const timer3 = setTimeout(() => {
+      setStep3Complete(true);
+      setProgress(75);
+    }, 2700);
+
+    // カウントダウン
+    const countdown = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdown);
+          // 5秒後にSTP戦略ページに遷移
+          setTimeout(() => {
+            router.push('/stp-strategy');
+          }, 500);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearInterval(countdown);
+    };
+  }, [showModal, router]);
+
   return (
     <>
       <style jsx global>{`
@@ -75,26 +130,22 @@ export default function PurposeInputPage() {
 
         body {
           font-family: ${notoSansJP.style.fontFamily}, sans-serif;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          min-height: 100vh;
-          background: #FAFAF9;
+          background-color: white;
+          -webkit-font-smoothing: antialiased;
           color: #3E4650;
         }
 
         .slide-container {
           width: 1280px;
-          min-height: calc(100vh - 60px);
-          display: flex;
-          flex-direction: column;
-          background: white;
+          min-height: 720px;
+          position: relative;
+          overflow: hidden;
+          background-color: white;
         }
 
         .slide-content {
-          flex: 1;
-          display: flex;
-          position: relative;
+          padding: 40px 80px;
+          overflow-y: auto;
         }
 
         .main-content {
@@ -332,22 +383,6 @@ export default function PurposeInputPage() {
           display: block;
         }
 
-        .ai-assistant {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          background-color: white;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-          border-radius: 20px;
-          padding: 18px;
-          max-width: 300px;
-        }
-
-        .ai-message {
-          margin-bottom: 8px;
-          font-size: 13px;
-        }
-
         .radio-group {
           display: flex;
           gap: 24px;
@@ -435,158 +470,276 @@ export default function PurposeInputPage() {
           }
         }
 
-        .execution-steps-section {
-          margin-top: 48px;
-          padding-top: 48px;
-          border-top: 1px solid #E6E9EF;
-        }
-
-        .step-cards-container {
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
           display: flex;
-          overflow-x: auto;
-          padding-bottom: 16px;
-          scroll-padding: 0 24px;
-          gap: 16px;
-          margin-bottom: 16px;
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .step-cards-container::-webkit-scrollbar {
-          display: none;
-        }
-
-        .step-card {
-          flex: 0 0 auto;
-          width: 166px;
-          height: 180px;
-          border: 1px solid #E6E9EF;
-          border-radius: 12px;
-          padding: 16px;
-          background-color: white;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .step-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .step-title {
-          font-size: 11px;
-          font-weight: 500;
-          color: #6B7280;
-          margin-bottom: 8px;
-        }
-
-        .step-status-badge {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          font-size: 10px;
-          padding: 2px 6px;
-          border-radius: 4px;
-          display: flex;
+          justify-content: center;
           align-items: center;
+          z-index: 1000;
+          animation: fadeIn 0.3s ease-out;
         }
 
-        .step-status-completed {
-          background-color: #DCFCE7;
-          color: #059669;
+        .modal-card {
+          max-width: 600px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          background-color: white;
+          border-radius: 16px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          padding: 48px 40px;
+          animation: fadeInUp 0.8s ease-out forwards;
+          position: relative;
         }
 
-        .step-status-in-progress {
-          background-color: #E0F2FE;
+        .modal-brain-icon {
+          font-size: 60px;
           color: #005A9C;
+          text-align: center;
+          margin-bottom: 24px;
+          animation: pulseGlowRotate 3s infinite;
         }
 
-        .step-status-not-started {
-          background-color: #F3F4F6;
-          color: #9CA3AF;
+        .modal-brain-icon-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100px;
         }
 
-        .step-main-title {
-          font-size: 14px;
+        .modal-title {
+          font-size: 28px;
           font-weight: 700;
           color: #111827;
-          margin-top: 16px;
-          margin-bottom: 8px;
           text-align: center;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          margin-bottom: 20px;
         }
 
-        .step-icon {
-          color: #005A9C;
-          margin-right: 8px;
-          font-size: 13px;
-        }
-
-        .step-description {
-          font-size: 12px;
+        .modal-status-text {
+          font-size: 16px;
           color: #374151;
-          line-height: 1.4;
           text-align: center;
-          height: 45px;
-          overflow: hidden;
+          margin-bottom: 24px;
+          line-height: 1.7;
         }
 
-        .step-button {
-          position: absolute;
-          bottom: 16px;
-          left: 16px;
-          right: 16px;
-          padding: 8px 0;
-          background-color: #005A9C;
-          color: white;
-          font-size: 12px;
-          font-weight: 500;
-          border-radius: 6px;
-          text-align: center;
-          transition: background-color 0.2s;
+        .modal-steps-container {
+          margin-bottom: 32px;
+        }
+
+        .modal-step {
+          font-size: 16px;
+          color: #4B5563;
+          line-height: 1.7;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          border: none;
+          align-items: flex-start;
+          margin-bottom: 16px;
+          opacity: 0.7;
+          transform: translateY(10px);
+        }
+
+        .modal-step.active {
+          opacity: 1;
+          transform: translateY(0);
+          transition: all 0.6s ease;
+        }
+
+        .modal-step-number {
+          background-color: #EEF6FF;
+          padding: 0 4px;
+          border-radius: 4px;
+          margin-right: 4px;
+        }
+
+        .modal-step-1 {
+          animation: fadeStep 0.6s forwards 0.3s;
+        }
+
+        .modal-step-2 {
+          animation: fadeStep 0.6s forwards 1.2s;
+        }
+
+        .modal-step-3 {
+          animation: fadeStep 0.6s forwards 2.1s;
+        }
+
+        .modal-check-icon {
+          margin-left: 8px;
+          color: #10B981;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+        }
+
+        .modal-check-icon.visible {
+          opacity: 1;
+        }
+
+        .modal-progress-container {
+          width: 100%;
+          height: 8px;
+          background-color: #E5E7EB;
+          border-radius: 4px;
+          margin: 30px 0;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .modal-progress-bar {
+          height: 100%;
+          background-color: #005A9C;
+          border-radius: 4px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          transition: width 0.3s ease-in-out;
+        }
+
+        .modal-time-estimate {
+          font-size: 15px;
+          color: #4B5563;
+          text-align: center;
+          margin-bottom: 40px;
+          line-height: 1.6;
+          font-weight: 500;
+        }
+
+        .modal-cancel-button-container {
+          text-align: center;
+          margin-top: 20px;
+        }
+
+        .modal-cancel-button {
+          display: inline-block;
+          font-size: 14px;
+          color: #6B7280;
+          text-align: center;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          padding: 10px 16px;
+          border: 1px solid #D1D5DB;
+          border-radius: 8px;
+          background: none;
           cursor: pointer;
         }
 
-        .step-button:hover {
-          background-color: #0074CC;
+        .modal-cancel-button:hover {
+          color: #005A9C;
+          background-color: #F3F4F6;
+          border-color: #005A9C;
         }
 
-        .step-button-icon {
-          margin-left: 4px;
-          font-size: 10px;
+        @keyframes pulseGlowRotate {
+          0% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+          }
+          25% {
+            transform: scale(1.05) rotate(5deg);
+            opacity: 0.9;
+          }
+          50% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+          }
+          75% {
+            transform: scale(1.05) rotate(-5deg);
+            opacity: 0.9;
+          }
+          100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+          }
         }
 
-        .step-badge-new {
-          background-color: #EEF7FF;
-          color: #0070D1;
-          font-weight: 500;
-          margin-left: 4px;
-          padding: 1px 4px;
-          border-radius: 4px;
-          font-size: 9px;
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeStep {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
         }
       `}</style>
-      <Header onMenuToggle={toggleMenu} isMenuOpen={isMenuOpen} />
-      {isMenuOpen && (
-        <div
-          className={`sidebar-overlay ${!isMenuOpen ? '' : 'show'}`}
-          onClick={toggleMenu}
-        ></div>
-      )}
-      <div className="slide-container">
-        <div className="slide-content">
-          <Sidebar isOpen={isMenuOpen} />
-          <div className="main-content">
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#F9FAFB' }}>
+        <Sidebar isOpen={isMenuOpen} />
+        {isMenuOpen && (
+          <div
+            className="sidebar-overlay show"
+            onClick={toggleMenu}
+          ></div>
+        )}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Header onMenuToggle={toggleMenu} isMenuOpen={isMenuOpen} />
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '20px', overflow: 'auto' }}>
+            <div className="slide-container">
+              <div className="slide-content">
+                <div className="main-content">
             <div className="content-wrapper">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '20px', left: 0, right: 0, height: '2px', background: '#E5E7EB', zIndex: 1 }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>目的入力</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>市場セグメント</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#005A9C', borderColor: '#005A9C', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>3</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#111827', textAlign: 'center', fontWeight: '500', maxWidth: '80px' }}>ターゲット選定</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>4</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>価値提案・ポジション</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>5</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>広告戦略</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>6</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>LP改善</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>7</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>施策・実行</p>
+                </div>
+              </div>
               <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '24px' }}>
                 AI戦略条件の設定
               </h1>
@@ -926,181 +1079,65 @@ export default function PurposeInputPage() {
                   入力内容をもとに、AIが市場構造を解析し、最適な戦略を自動生成します。
                 </p>
               </div>
-              <div className="ai-assistant">
-                <div className="ai-message">STP情報を分析しています…</div>
-                <div className="ai-message">入力内容を基に戦略案を生成します</div>
-              </div>
-            </div>
-            <div className="execution-steps-section">
-              <h2
-                style={{
-                  fontSize: '28px',
-                  fontWeight: '700',
-                  color: '#111827',
-                  marginBottom: '12px',
-                }}
-              >
-                Enterprise Lite AIマーケティングフロー - 実行ステップ
-              </h2>
-              <p
-                style={{
-                  fontSize: '16px',
-                  color: '#6B7280',
-                  lineHeight: '1.5',
-                  maxWidth: '900px',
-                  marginBottom: '32px',
-                }}
-              >
-                AIが戦略立案から広告設計までを一気通貫で支援します。各ステップをクリックして進めてください。
-              </p>
-              <div className="step-cards-container">
-                <div className="step-card">
-                  <p className="step-title">STEP 1</p>
-                  <div className="step-status-badge step-status-in-progress">
-                    <i className="fas fa-spinner fa-spin" style={{ marginRight: '4px' }}></i>
-                    <p>作成中</p>
-                  </div>
-                  <h3 className="step-main-title">
-                    <i className="fas fa-bullseye step-icon"></i>
-                    <p>目的・条件入力</p>
-                  </h3>
-                  <p className="step-description">ビジネスの目的と条件を設定します</p>
-                  <button className="step-button">
-                    <p>設定する</p>
-                    <i className="fas fa-arrow-right step-button-icon"></i>
-                  </button>
-                </div>
-                <div className="step-card">
-                  <p className="step-title">STEP 2</p>
-                  <div className="step-status-badge step-status-not-started">
-                    <i className="fas fa-circle" style={{ marginRight: '4px' }}></i>
-                    <p>未開始</p>
-                  </div>
-                  <h3 className="step-main-title">
-                    <i className="fas fa-chart-pie step-icon"></i>
-                    <p>STP戦略自動生成</p>
-                  </h3>
-                  <p className="step-description">AIが最適なSTP戦略を自動生成します</p>
-                  <button className="step-button">
-                    <p>結果を見る</p>
-                    <i className="fas fa-arrow-right step-button-icon"></i>
-                  </button>
-                </div>
-                <div className="step-card">
-                  <p className="step-title">STEP 3</p>
-                  <div className="step-status-badge step-status-not-started">
-                    <i className="fas fa-circle" style={{ marginRight: '4px' }}></i>
-                    <p>未開始</p>
-                  </div>
-                  <h3 className="step-main-title">
-                    <i className="fas fa-ad step-icon"></i>
-                    <p>広告戦略プレビュー</p>
-                  </h3>
-                  <p className="step-description">媒体別の広告戦略を自動でプレビューします</p>
-                  <button className="step-button">
-                    <p>戦略を見る</p>
-                    <i className="fas fa-arrow-right step-button-icon"></i>
-                  </button>
-                </div>
-                <div className="step-card">
-                  <p className="step-title">STEP 4</p>
-                  <div className="step-status-badge step-status-not-started">
-                    <i className="fas fa-circle" style={{ marginRight: '4px' }}></i>
-                    <p>未開始</p>
-                  </div>
-                  <h3 className="step-main-title">
-                    <i className="fas fa-clipboard-list step-icon"></i>
-                    <p>施策プラン自動生成</p>
-                  </h3>
-                  <p className="step-description">実行可能な施策プランをAIが提案します</p>
-                  <button className="step-button">
-                    <p>プランを見る</p>
-                    <i className="fas fa-arrow-right step-button-icon"></i>
-                  </button>
-                </div>
-                <div className="step-card">
-                  <p className="step-title">STEP 5</p>
-                  <div className="step-status-badge step-status-not-started">
-                    <i className="fas fa-circle" style={{ marginRight: '4px' }}></i>
-                    <p>未開始</p>
-                  </div>
-                  <h3 className="step-main-title">
-                    <i className="fas fa-brain step-icon"></i>
-                    <p>LP改善AI</p>
-                  </h3>
-                  <p className="step-description">AIがLPの構成・コピー・CTAを解析し改善提案します</p>
-                  <button className="step-button">
-                    <p>改善提案を見る</p>
-                    <i className="fas fa-arrow-right step-button-icon"></i>
-                  </button>
-                </div>
-                <div className="step-card">
-                  <p className="step-title">STEP 6</p>
-                  <div className="step-status-badge step-status-not-started">
-                    <i className="fas fa-circle" style={{ marginRight: '4px' }}></i>
-                    <p>未開始</p>
-                  </div>
-                  <h3 className="step-main-title">
-                    <i className="fas fa-calendar-alt step-icon"></i>
-                    <p>実行管理</p>
-                  </h3>
-                  <p className="step-description">実行ステータスと進捗を管理します</p>
-                  <button className="step-button">
-                    <p>管理画面へ</p>
-                    <i className="fas fa-arrow-right step-button-icon"></i>
-                  </button>
-                </div>
-                <div className="step-card">
-                  <p className="step-title">STEP 7</p>
-                  <div className="step-status-badge step-status-not-started">
-                    <i className="fas fa-circle" style={{ marginRight: '4px' }}></i>
-                    <p>未開始</p>
-                  </div>
-                  <h3 className="step-main-title">
-                    <i className="fas fa-file-alt step-icon"></i>
-                    <p>AIレポート生成</p>
-                    <span className="step-badge-new">NEW</span>
-                  </h3>
-                  <p className="step-description">AIが自動的にレポートを生成します</p>
-                  <button className="step-button">
-                    <p>レポートを見る</p>
-                    <i className="fas fa-arrow-right step-button-icon"></i>
-                  </button>
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: '#005A9C',
-                    borderRadius: '50%',
-                    margin: '0 4px',
-                  }}
-                ></div>
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: '#E6E9EF',
-                    borderRadius: '50%',
-                    margin: '0 4px',
-                  }}
-                ></div>
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: '#E6E9EF',
-                    borderRadius: '50%',
-                    margin: '0 4px',
-                  }}
-                ></div>
-              </div>
             </div>
           </div>
         </div>
+        </div>
+          </div>
+        </div>
       </div>
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-brain-icon-container">
+              <div className="modal-brain-icon">
+                <i className="fas fa-brain"></i>
+              </div>
+            </div>
+            <h1 className="modal-title">AIがあなたの戦略を思考しています…</h1>
+            <div className="modal-status-text">
+              AIが過去施策データと市場トレンドを照合し、戦略仮説を生成しています。<br />
+              約5〜10秒で結果が表示されます。
+            </div>
+            <div className="modal-steps-container">
+              <div className={`modal-step modal-step-1 ${step1Complete ? 'active' : ''}`}>
+                <p>
+                  <span className="modal-step-number">1.</span> 市場カテゴリから競争軸と市場構造を解析しています
+                </p>
+                <i className={`fas fa-check-circle modal-check-icon ${step1Complete ? 'visible' : ''}`}></i>
+              </div>
+              <div className={`modal-step modal-step-2 ${step2Complete ? 'active' : ''}`}>
+                <p>
+                  <span className="modal-step-number">2.</span> 類似業界の成功要因を抽出しています
+                </p>
+                <i className={`fas fa-check-circle modal-check-icon ${step2Complete ? 'visible' : ''}`}></i>
+              </div>
+              <div className={`modal-step modal-step-3 ${step3Complete ? 'active' : ''}`}>
+                <p>
+                  <span className="modal-step-number">3.</span> 最適なセグメント・ターゲット・ポジション（STP）を設計しています
+                </p>
+                <i className={`fas fa-check-circle modal-check-icon ${step3Complete ? 'visible' : ''}`}></i>
+              </div>
+            </div>
+            <div className="modal-progress-container">
+              <div className="modal-progress-bar" style={{ width: `${progress}%` }}></div>
+            </div>
+            <div className="modal-time-estimate">
+              AI解析完了まで残り約{timeRemaining}秒
+            </div>
+            <div className="modal-cancel-button-container">
+              <button 
+                className="modal-cancel-button" 
+                onClick={() => {
+                  setShowModal(false);
+                }}
+              >
+                中断して再入力へ戻る
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

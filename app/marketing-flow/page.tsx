@@ -37,25 +37,21 @@ export default function MarketingFlowPage() {
 
         body {
           font-family: ${notoSansJP.style.fontFamily}, sans-serif;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          min-height: 100vh;
-          background: #F9FAFB;
+          background-color: white;
+          -webkit-font-smoothing: antialiased;
         }
 
         .slide-container {
           width: 1280px;
-          min-height: calc(100vh - 60px);
-          display: flex;
-          flex-direction: column;
-          background: white;
+          min-height: 720px;
+          position: relative;
+          overflow: hidden;
+          background-color: white;
         }
 
         .slide-content {
-          flex: 1;
-          display: flex;
-          position: relative;
+          padding: 40px 80px;
+          overflow-y: auto;
         }
 
         .sidebar-overlay {
@@ -304,17 +300,20 @@ export default function MarketingFlowPage() {
           font-size: 9px;
         }
       `}</style>
-      <Header onMenuToggle={toggleMenu} isMenuOpen={isMenuOpen} />
-      {isMenuOpen && (
-        <div
-          className={`sidebar-overlay ${!isMenuOpen ? '' : 'show'}`}
-          onClick={toggleMenu}
-        ></div>
-      )}
-      <div className="slide-container">
-        <div className="slide-content">
-          <Sidebar isOpen={isMenuOpen} />
-          <div className="main-content">
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#F9FAFB' }}>
+        <Sidebar isOpen={isMenuOpen} />
+        {isMenuOpen && (
+          <div
+            className="sidebar-overlay show"
+            onClick={toggleMenu}
+          ></div>
+        )}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Header onMenuToggle={toggleMenu} isMenuOpen={isMenuOpen} />
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '20px', overflow: 'auto' }}>
+            <div className="slide-container">
+              <div className="slide-content">
+                <div className="main-content">
             <div>
               <h1
                 style={{
@@ -1231,6 +1230,9 @@ export default function MarketingFlowPage() {
                     margin: '0 4px',
                   }}
                 ></div>
+              </div>
+            </div>
+          </div>
               </div>
             </div>
           </div>

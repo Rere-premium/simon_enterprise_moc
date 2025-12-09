@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Noto_Sans_JP } from 'next/font/google';
 import Script from 'next/script';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 
 const notoSansJP = Noto_Sans_JP({
   weight: ['300', '400', '500', '700'],
@@ -13,8 +15,13 @@ const notoSansJP = Noto_Sans_JP({
 
 export default function AdStrategyPreviewPage() {
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<any>(null);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined' && chartRef.current && (window as any).Chart) {
@@ -138,6 +145,23 @@ export default function AdStrategyPreviewPage() {
 
         body {
           font-family: ${notoSansJP.style.fontFamily}, sans-serif;
+        }
+
+        .sidebar-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 40;
+        }
+
+        @media (max-width: 1023px) {
+          .sidebar-overlay.show {
+            display: block;
+          }
         }
 
         .slide-container {
@@ -333,8 +357,20 @@ export default function AdStrategyPreviewPage() {
 
         .buttons {
           display: flex;
-          justify-content: center;
+          justify-content: space-between;
+          align-items: center;
           margin-top: 32px;
+        }
+
+        .buttons-left {
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .buttons-center {
+          display: flex;
+          justify-content: center;
+          flex: 1;
         }
 
         .primary-button {
@@ -388,8 +424,64 @@ export default function AdStrategyPreviewPage() {
           margin-top: 8px;
         }
       `}</style>
-      <div className="slide-container">
-        <div className="main-content">
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#F9FAFB' }}>
+        <Sidebar isOpen={isMenuOpen} />
+        {isMenuOpen && (
+          <div
+            className="sidebar-overlay show"
+            onClick={toggleMenu}
+          ></div>
+        )}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Header onMenuToggle={toggleMenu} isMenuOpen={isMenuOpen} />
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '20px', overflow: 'auto' }}>
+            <div className="slide-container">
+              <div className="main-content">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '20px', left: 0, right: 0, height: '2px', background: '#E5E7EB', zIndex: 1 }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>目的入力</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>市場セグメント</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>ターゲット選定</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', border: '2px solid #059669', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <i className="fas fa-check fa-xs"></i>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>価値提案・ポジション</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#005A9C', borderColor: '#005A9C', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>5</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#111827', textAlign: 'center', fontWeight: '500', maxWidth: '80px' }}>広告戦略</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>6</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>LP改善</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'white', border: '2px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px', fontSize: '11px' }}>
+                    <p>7</p>
+                  </div>
+                  <p style={{ fontSize: '11px', color: '#6B7280', textAlign: 'center', maxWidth: '80px' }}>施策・実行</p>
+                </div>
+              </div>
           <h1>広告戦略プレビュー（AI自動生成）</h1>
           <p className="description">上流のSTP戦略をもとに、AIが最適な広告配分・施策戦略を自動生成しました。後から編集も可能です。</p>
 
@@ -524,18 +616,27 @@ export default function AdStrategyPreviewPage() {
           </div>
 
           <div className="buttons">
-            <button className="primary-button" onClick={handleEdit}>
-              広告戦略を編集する
-            </button>
+            <div className="buttons-left">
+              <button className="primary-button">
+                広告戦略を編集する
+              </button>
+            </div>
+            <div className="buttons-center">
+              <button className="primary-button" onClick={() => router.push('/strategy-plan')}>
+                施策計画へ →
+              </button>
+            </div>
+            <div style={{ width: '200px' }}></div>
           </div>
 
           <div className="navigation">
             <a className="nav-link" onClick={() => router.push('/stp-strategy')}>
               ← 戻る（条件設定へ）
             </a>
-            <a className="nav-link" onClick={() => router.push('/strategy-plan')}>
-              施策計画へ →
-            </a>
+            <div></div>
+          </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

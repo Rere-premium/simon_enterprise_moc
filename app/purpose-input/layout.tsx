@@ -10,6 +10,14 @@ export default function PurposeInputLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <link
+        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+        rel="stylesheet"
+      />
+      {children}
+    </>
+  );
 }
 
