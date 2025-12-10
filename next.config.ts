@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // 本番環境（GitHub Pages用）の設定
-  ...(process.env.NODE_ENV === 'production' && {
+  // NODE_ENVがproductionの場合、またはGITHUB_PAGES環境変数が設定されている場合にbasePathを設定
+  ...((process.env.NODE_ENV === 'production' || process.env.GITHUB_PAGES === 'true') && {
     output: 'export',
     // GitHub Pagesのリポジトリ名をbasePathに設定
     basePath: '/simon_enterprise_moc',

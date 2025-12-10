@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 interface HeaderProps {
   onMenuToggle?: () => void;
   isMenuOpen?: boolean;
@@ -148,18 +150,18 @@ export default function Header({ onMenuToggle, isMenuOpen }: HeaderProps) {
           </button>
           <div className="logo">simon</div>
           <nav className="header-nav">
-            <a href="/marketing-flow" className="nav-link">
+            <Link href="/marketing-flow" className="nav-link">
               ダッシュボード
-            </a>
-            <a href="#" className="nav-link">
+            </Link>
+            <Link href="#" className="nav-link">
               キャンペーン
-            </a>
-            <a href="#" className="nav-link">
+            </Link>
+            <Link href="#" className="nav-link">
               レポート
-            </a>
-            <a href="#" className="nav-link">
+            </Link>
+            <Link href="#" className="nav-link">
               設定
-            </a>
+            </Link>
           </nav>
         </div>
         <div className="header-right">
